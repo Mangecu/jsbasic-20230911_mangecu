@@ -15,33 +15,22 @@
 export default class UserTable {
 
   elem = null;
-
   #rows = [];
-
 
   constructor(rows) {
     this.#rows = rows || this.#rows;
     this.#render();
+    this.#deleteRow()
   }
   #render() {
     this.elem = this.createDOMElement(this.#template());
-
-  }
-
-  #templateRows(item) {
-    let list = document.createElement('tr');
-    for (let index in item) {
-      let row = document.createElement('td');
-      row.innerText = `${item[index]}`
-      list.append(row);
-    }
-    return list
   }
 
   createDOMElement (html) {
-    const temp = document.createElement('table');
+    const temp = document.createElement('div');
     temp.innerHTML = html;
     return temp.firstElementChild;
+
   }
 
   #template() {
@@ -57,13 +46,29 @@ export default class UserTable {
             </tr>
          </thead>
          <tbody>
-            ${this.#rows.forEach(item => this.#templateRows(item))};
+            ${this.#rows
+              .map(item => `<tr>
+                              <td>${item.name}</td>
+                              <td>${item.age}</td>
+                              <td>${item.salary}</td>
+                              <td>${item.city}</td>
+                              <td><button>X</button></td>
+                            </tr>`)
+              .join('\n')}
          </tbody>
       </table>
     `
   }
 
+  #deleteRow() {
+    let btn = this.elem.querySelectorAll('button');
+    btn.forEach((elem) => {
+      elem.addEventListener('click', (btn) => {
+        btn.target.closest("tr").remove()
 
+      })
+    })
+  }
 }
 
 
