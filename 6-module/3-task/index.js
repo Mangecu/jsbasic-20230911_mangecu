@@ -8,12 +8,12 @@ export default class Carousel {
     this.count = 0;
     this.slides = slides;
     this.#render();
-
   }
 
   #render() {
     this.elem = this.createDOMElement(this.#template(), 'div');
-
+    this.#initCarousel(this.elem);
+    this.#addToCart(this.elem);
   }
 
   createDOMElement(html, tag) {
@@ -49,6 +49,48 @@ export default class Carousel {
     `
   }
 
+  #initCarousel(elem) {
+    let carousel = elem.querySelector('.carousel__inner');
+    let carouselArrow = elem.querySelectorAll('.carousel__arrow');
 
+    this.hiddenArrow (this.count, carouselArrow, this.slides.length);
 
+    carouselArrow.forEach(button => {
+      button.addEventListener('click',event => {
+        if (event.currentTarget.classList.contains('carousel__arrow_right')) {
+          this.count++;
+        } else if (event.currentTarget.classList.contains('carousel__arrow_left')) {
+          this.count--;
+        }
+        carousel.style.transform = `translateX(-${this.count * carousel.offsetWidth}px)`;
+        this.hiddenArrow (this.count, carouselArrow, this.slides.length);
+      })
+    })
+  }
+
+  hiddenArrow (count, carouselArrow, countSlide) {
+    if (count === 0) {
+      carouselArrow[1].style.display = 'none';
+    } else {
+      carouselArrow[1].style.display = '';
+    }
+
+    if (count >= countSlide - 1) {
+      carouselArrow[0].style.display = 'none';
+    } else {
+      carouselArrow[0].style.display = '';
+    }
+  }
+
+  #addToCart(elem) {
+    let buttons = elem.querySelectorAll('.carousel__button');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        elem.dispatchEvent(new CustomEvent("product-add", {
+          detail: button.closest('.carousel__slide').dataset.id,
+          bubbles: true
+        }))
+      })
+    })
+  }
 }
